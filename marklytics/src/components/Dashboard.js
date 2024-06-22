@@ -12,6 +12,9 @@ const Dashboard = () => {
     const getData = async () => {
       try {
         const result = await fetchStockData('AAPL');
+        if (!result || !result['Time Series (Daily)']) {
+          throw new Error('Invalid data format');
+        }
         const timeSeries = result['Time Series (Daily)'];
         const formattedData = Object.keys(timeSeries).map((key) => ({
           date: key,
@@ -21,9 +24,10 @@ const Dashboard = () => {
           close: parseFloat(timeSeries[key]['4. close']),
         }));
         setData(formattedData);
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching stock data:', error);
+      } finally {
+        setLoading(false);
       }
     };
     getData();
